@@ -123,4 +123,123 @@ def view_borrow_history(username):
         status = "✅ Returned" if r["return_date"] else "⏳ Not Returned"
         print(f"{r['book_id']} - {title}")
         print(f"   Borrowed: {r['borrow_date']}")
-        print(f"   Re")
+        print(f"   Returned: {r['return_date'] or '---'} ({status})")
+        print("----------------------------")
+    print()
+
+def student_menu(username):
+    while True:
+        print("=== Student Menu ===")
+        print("1. View All Books")
+        print("2. Borrow Book")
+        print("3. Return Book")
+        print("4. View Borrow History")
+        print("5. Log Out")
+        choice = input("Select option: ")
+        if choice == "1":
+            show_books()
+        elif choice == "2":
+            borrow_book(username)
+        elif choice == "3":
+            return_book(username)
+        elif choice == "4":
+            view_borrow_history(username)
+        elif choice == "5":
+            print("👋 Logged out.\n")
+            break
+        else:
+            print("❌ Invalid choice.\n")
+
+# ---------------- LIBRARIAN FUNCTIONS ----------------
+
+def login_librarian():
+    username = input("Librarian username: ")
+    password = input("Enter Password: ")
+
+    if username in librarian_account and librarian_account[username] == password:
+        print("✅ Librarian login successful!\n")
+        librarian_menu()
+    else:
+        print("❌ Invalid librarian credentials.\n")
+
+def librarian_menu():
+    while True:
+        print("=== Librarian Menu ===")
+        print("1. View All Books")
+        print("2. Add New Book")
+        print("3. View All Borrowed Books")
+        print("4. Log Out")
+        choice = input("Select option: ")
+
+        if choice == "1":
+            show_books()
+        elif choice == "2":
+            add_book()
+        elif choice == "3":
+            view_all_borrowed_books()
+        elif choice == "4":
+            print("👋 Logged out of librarian account.\n")
+            break
+        else:
+            print("❌ Invalid choice.\n")
+
+def add_book():
+    new_id = input("Enter new Book ID: ")
+    title = input("Enter Book Title: ")
+    shelf = input("Enter Shelf Location (e.g., Shelf A): ")
+
+    if not new_id or not title or not shelf:
+        print("⚠️ Book ID, title, and shelf cannot be empty.\n")
+        return
+
+    if new_id in books:
+        print("⚠️ Book ID already exists.\n")
+        return
+
+    books[new_id] = {"title": title, "available": True, "shelf": shelf}
+    print(f"✅ Book '{title}' added successfully to {shelf} with ID {new_id}!\n")
+
+
+def view_all_borrowed_books():
+    print("\n📚 All Borrowed Books:")
+    print("----------------------------")
+    if not borrowed_books:
+        print("No books have been borrowed yet.\n")
+        return
+
+    for user, records in borrowed_books.items():
+        print(f"👤 {user}:")
+        for r in records:
+            title = books.get(r["book_id"], {}).get("title", "Unknown Title")
+            status = "✅ Returned" if r["return_date"] else "⏳ Not Returned"
+            print(f"   {r['book_id']} - {title}")
+            print(f"   Borrowed: {r['borrow_date']}")
+            print(f"   Returned: {r['return_date'] or '---'} ({status})")
+        print("----------------------------")
+    print()
+
+# ---------------- MAIN MENU ----------------
+
+def main():
+    while True:
+        print("=== Library System ===")
+        print("1. Register Student")
+        print("2. Student Login")
+        print("3. Librarian Login")
+        print("4. Exit")
+        choice = input("Choose option: ")
+
+        if choice == "1":
+            register_student()
+        elif choice == "2":
+            login_student()
+        elif choice == "3":
+            login_librarian()
+        elif choice == "4":
+            print("📕 Goodbye!")
+            break
+        else:
+            print("❌ Invalid choice.\n")
+
+if __name__ == "__main__":
+    main()
